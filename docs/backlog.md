@@ -31,6 +31,8 @@ Este backlog separa preparacao tecnica de features de produto para facilitar tar
 
 ## Features de produto
 
+- Concluido: interpretar pedidos naturais de alteracao de titulo no chat, separando o titulo atual do novo titulo em frases como Altere titulo da despesa X para Y.
+
 ### P0
 
 - Concluido: padronizar botões primários pelo estilo do botão Entrar, com superfície transparente, borda e brilho ciano e capitalização de frase consistente com “Cadastrar”.

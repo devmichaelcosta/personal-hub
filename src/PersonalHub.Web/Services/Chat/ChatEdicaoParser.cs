@@ -9,6 +9,10 @@ public static class ChatEdicaoParser
         @"\bdespesa\s+(?:(?:identificada|identificado)\s+como\s+|(?:chamada|chamado|de\s+nome|de\s+t[i\u00ed]tulo|com\s+t[i\u00ed]tulo)\s+)?[""“‘](?<alvo>[^""“”‘’]+)[""”’]",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex TituloDaDespesaParaNovoTitulo = new(
+        @"\bt[i\u00ed]tulo\s+da\s+despesa\s+(?<atual>.+?)\s+para\s+(?<novo>[^.;\r\n]+)",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex VerboEdicao = new(
         @"\b(?:edite|editar|altere|alterar|mude|mudar|modifique|modificar|atualize|atualizar|corrija|corrigir)\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -78,6 +82,14 @@ public static class ChatEdicaoParser
         else if (Regex.IsMatch(mensagem, @"\b(?:remova|limpe|apague)\s+(?:todas\s+as\s+)?tags?\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
             intent.Tags = new List<string>();
+        }
+
+        Match tituloDaDespesa = TituloDaDespesaParaNovoTitulo.Match(mensagem);
+        if (tituloDaDespesa.Success)
+        {
+            textoBusca = LimparExtremidades(tituloDaDespesa.Groups["atual"].Value);
+            intent.TextoBusca = textoBusca[..Math.Min(textoBusca.Length, 100)];
+            intent.Titulo = LimparExtremidades(tituloDaDespesa.Groups["novo"].Value);
         }
 
         return true;
