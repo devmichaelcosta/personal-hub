@@ -22,6 +22,43 @@ public sealed class ChatAssistenteIntegracaoTestes
     private static readonly CancellationToken TestCancellationToken = CancellationToken.None;
 
     [ChatIntegrationFact]
+    public async Task PedidoOriginalDeEdicaoEncontraDespesaPorTituloAtualEPreparaAlteracoes()
+    {
+        await using BancoTeste banco = await BancoTeste.CriarAsync();
+        Usuario usuario = await banco.CriarUsuarioAsync("edicao-titulo-atual");
+        Despesa despesa = new(
+            0,
+            "TESTE IA ORCA 20261120",
+            1,
+            250m,
+            string.Empty,
+            new DateTime(2026, 11, 20),
+            new List<string> { usuario.Id },
+            new List<Tag>());
+        banco.Context.Despesas.Add(despesa);
+        await banco.Context.SaveChangesAsync(TestCancellationToken);
+
+        ChatAssistenteService service = new(
+            banco.Context,
+            new OllamaFake(new HttpRequestException("O parser determinístico não deve chamar o Ollama.")));
+        ChatRespostaDto resposta = await service.EnviarAsync(
+            usuario.Id,
+            "Use o comando 'editar' mude o valor da despesa de titulo \"TESTE IA ORCA 20261120\" para 321,00€, e mude o título para Mercado",
+            null,
+            null,
+            TestCancellationToken);
+
+        Assert.True(resposta.Sucesso, resposta.Mensagem);
+        Assert.Equal("edicao", resposta.Resposta?.Tipo);
+        ChatEdicaoRascunho rascunho = Assert.Single(resposta.Resposta!.Edicoes!);
+        Assert.Equal(despesa.Id, rascunho.DespesaId);
+        Assert.Equal("Mercado", rascunho.Titulo);
+        Assert.Equal(321.00m, rascunho.ValorParcela);
+        Assert.Equal("TESTE IA ORCA 20261120", despesa.Titulo);
+        Assert.Equal(250m, despesa.Valor);
+    }
+
+    [ChatIntegrationFact]
     public async Task ConsultaRetornaSomenteDespesasDoUsuarioECalculaRateioCompartilhado()
     {
         await using BancoTeste banco = await BancoTeste.CriarAsync();

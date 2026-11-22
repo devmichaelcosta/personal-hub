@@ -5,12 +5,16 @@ namespace PersonalHub.Web.Services.Chat;
 
 public static class ChatEdicaoParser
 {
+    private static readonly Regex AlvoDespesaEntreAspas = new(
+        @"\bdespesa\s+(?:(?:identificada|identificado)\s+como\s+|(?:chamada|chamado|de\s+nome|de\s+t[i\u00ed]tulo|com\s+t[i\u00ed]tulo)\s+)?[""“‘](?<alvo>[^""“”‘’]+)[""”’]",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex VerboEdicao = new(
         @"\b(?:edite|editar|altere|alterar|mude|mudar|modifique|modificar|atualize|atualizar|corrija|corrigir)\b",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex AlvoDespesa = new(
-        @"\bdespesa\s+(?:(?:identificada|identificado)\s+como\s+|(?:chamada|chamado|de\s+nome)\s+)?(?<alvo>[^.;\r\n]+)",
+        @"\bdespesa\s+(?:(?:identificada|identificado)\s+como\s+|(?:chamada|chamado|de\s+nome|de\s+t[i\u00ed]tulo|com\s+t[i\u00ed]tulo)\s+)?(?<alvo>[^.;\r\n]+)",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     public static bool TentarInterpretar(string mensagem, out ChatEdicaoIntent intent)
@@ -28,6 +32,15 @@ public static class ChatEdicaoParser
             @"\s+(?:(?:e\s+)?(?:mude|altere|edite|defina|atualize|corrija|modifique|seja\s+alterad[oa])|para\s+(?:o\s+)?(?:valor|descri[cç][aã]o|t[ií]tulo|nome|vencimento|data|tag|parcelas))\b.*$",
             string.Empty,
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        Match alvoEntreAspas = AlvoDespesaEntreAspas.Match(mensagem);
+        if (alvoEntreAspas.Success)
+            textoBusca = alvoEntreAspas.Groups["alvo"].Value;
+        else
+            textoBusca = Regex.Replace(
+                textoBusca,
+                @"\s+para\s+(?:R\$\s*)?\d[\d.,]*\s*\u20ac?.*$",
+                string.Empty,
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         textoBusca = LimparExtremidades(textoBusca);
         if (textoBusca.Length < 2)
             return false;
@@ -37,6 +50,7 @@ public static class ChatEdicaoParser
         intent.Descricao = CapturarCampo(mensagem, @"(?:descri[cç][aã]o|descritivo)\s+(?:para|como|deve\s+ser)\s+(?<valor>[^.;\r\n]+)");
 
         string? valorTexto = CapturarCampo(mensagem, @"(?:valor(?:\s+por\s+parcela)?|pre[cç]o)\s+(?:para|como|deve\s+ser|de)\s+(?<valor>R\$\s*)?(?<numero>\d[\d.,]*)", "numero");
+        valorTexto ??= CapturarCampo(mensagem, @"(?:valor(?:\s+por\s+parcela)?|pre[c\u00e7]o)\b(?:(?![.;\r\n]).)*?\bpara\s+(?:R\$\s*)?(?<numero>\d[\d.,]*)\s*€?", "numero");
         if (valorTexto != null && TentarLerValor(valorTexto, out decimal valor))
             intent.ValorParcela = valor;
 

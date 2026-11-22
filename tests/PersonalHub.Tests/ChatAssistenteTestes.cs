@@ -90,6 +90,31 @@ public class ChatAssistenteTestes
     }
 
     [Theory]
+    [InlineData("Use o comando 'editar' mude o valor da despesa de titulo \"TESTE IA ORCA 20261120\" para 321,00€, e mude o título para Mercado")]
+    [InlineData("Use o comando 'editar' mude o valor da despesa de titulo TESTE IA ORCA 20261120 para 321,00€, e mude o título para Mercado")]
+    public void ParserDeEdicao_ExtraiTituloAtualValorENovoTituloNaMesmaInstrucao(string mensagem)
+    {
+        bool reconheceu = ChatEdicaoParser.TentarInterpretar(mensagem, out ChatEdicaoIntent intent);
+
+        Assert.True(reconheceu);
+        Assert.Equal(321.00m, intent.ValorParcela);
+        Assert.Equal("TESTE IA ORCA 20261120", intent.TextoBusca);
+        Assert.Equal("Mercado", intent.Titulo);
+    }
+
+    [Fact]
+    public void ParserDeEdicao_NaoUsaNovoTituloEntreAspasComoAlvoDaBusca()
+    {
+        const string mensagem = "Edite a despesa Conta de luz e mude o título para \"Mercado Central\".";
+
+        bool reconheceu = ChatEdicaoParser.TentarInterpretar(mensagem, out ChatEdicaoIntent intent);
+
+        Assert.True(reconheceu);
+        Assert.Equal("Conta de luz", intent.TextoBusca);
+        Assert.Equal("Mercado Central", intent.Titulo);
+    }
+
+    [Theory]
     [InlineData("Preciso que me informe o total de gastos do mes atual.")]
     [InlineData("Quanto gastei este mês?")]
     public void ParserDeConsulta_RoteiaTotalDoMesAtualParaConsultaDeterministica(string mensagem)

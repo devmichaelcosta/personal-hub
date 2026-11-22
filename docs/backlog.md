@@ -91,6 +91,7 @@ Este backlog separa preparacao tecnica de features de produto para facilitar tar
 ### P1
 
 - Concluído: implementar assistente completo de despesas por chat com IA local, incluindo consultas, relatórios, cadastro por texto/imagem e histórico persistente; confirmação individual ou em lote atômica; edição revisável da despesa inteira seguindo o fluxo do dashboard; proteção contra duplicidades em despesas, parcelas e ocorrências recorrentes; e detecção de propostas desatualizadas. Especificação em `docs/specs/chat-consulta-despesas.md`.
+- Concluído: corrigir a identificação de despesa na edição pelo chat quando o usuário informa o título atual após “de título”, inclusive entre aspas, e extrair corretamente valor monetário seguido de `€`.
 
 ### P2
 
