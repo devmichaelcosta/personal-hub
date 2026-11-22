@@ -1,0 +1,41 @@
+@model PersonalHub.Web.Models.ViewModels.RendimentoCadastroViewModel
+
+<div class="cabecalho">
+    Cadastrar rendimento
+</div>
+<div class="corpo">
+    <form asp-action="Cadastrar" id="form-cadastro-rendimento">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="UsuarioId" type="hidden" />
+
+        <div class="form-group">
+            <label asp-for="Titulo" class="control-label">Título</label>
+            <input asp-for="Titulo" class="form-control" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Descritivo" class="control-label"></label>
+            <textarea asp-for="Descritivo" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label asp-for="Data" class="control-label"></label>
+                <input asp-for="Data" class="form-control" type="date" />
+                <span asp-validation-for="Data" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Valor" class="control-label"></label>
+            <input asp-for="Valor" class="form-control" />
+            <span asp-validation-for="Valor" class="text-danger"></span>
+        </div>
+    </form>
+</div>
+<div class="rodape">
+    <button type="button" class="btn btn-dark" id="btn-cadastrar-rendimento-modal">
+        Cadastrar
+    </button>
+</div>

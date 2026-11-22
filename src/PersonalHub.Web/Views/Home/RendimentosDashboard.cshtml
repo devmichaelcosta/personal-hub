@@ -1,0 +1,50 @@
+@model PersonalHub.Web.Models.ViewModels.RendimentosDashboardViewModel
+
+<div class="cabecalho">
+    Rendimentos de @Model.Periodo
+</div>
+<div class="corpo">
+    @if (Model.Rendimentos.Count == 0)
+    {
+        <div class="alert alert-info">Nenhum rendimento encontrado para o período selecionado.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table id="tb-rendimentos-dashboard" class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Título</th>
+                        <th>Descrição</th>
+                        <th>Usuário</th>
+                        <th class="text-end">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var rendimento in Model.Rendimentos)
+                    {
+                        <tr>
+                            <td class="text-nowrap" data-order="@rendimento.Data.ToString("yyyy-MM-dd")">@rendimento.Data.ToString("dd/MM/yyyy")</td>
+                            <td>@rendimento.Titulo</td>
+                            <td>@(string.IsNullOrWhiteSpace(rendimento.Descritivo) ? "-" : rendimento.Descritivo)</td>
+                            <td>@rendimento.Usuario</td>
+                            <td class="text-end text-nowrap">@rendimento.ValorFormatado</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-end">Total</th>
+                        <th class="text-end text-nowrap">@Model.Total.ToString("C2")</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+</div>
+<div class="rodape">
+    <button type="button" class="btn btn-warning" onclick="$.sidebar.fnFechar()">
+        <i class="fa fa-close"></i> Fechar
+    </button>
+</div>

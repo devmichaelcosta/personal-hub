@@ -1,0 +1,308 @@
+@{
+    ViewData["Title"] = "Lista de despesas";
+    ViewData["DesignSystemPilot"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var usuariosDisponiveis = ViewBag.UsuariosDisponiveis as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new();
+    var tagsDisponiveis = ViewBag.TagsDisponiveis as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new();
+}
+
+<section class="dashboard-shell listagem-shell">
+    <div class="dashboard-title">
+        <div>
+            <span class="section-kicker">Lançamentos</span>
+            <h1>Lista de despesas</h1>
+            <p>Consulta paginada de despesas cadastradas</p>
+        </div>
+        <div class="dashboard-title-actions">
+            <a class="btn btn-accent dashboard-title-action" asp-action="Cadastro">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                <span>Cadastrar</span>
+            </a>
+        </div>
+    </div>
+
+    <form id="filtros-despesas-listagem" class="dashboard-filters listagem-filters">
+        <div class="listagem-filter-grid">
+            <div>
+                <label class="form-label" for="FiltroTexto">Texto</label>
+                <div class="input-with-icon">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <input class="form-control" type="text" id="FiltroTexto" placeholder="Buscar despesas..." />
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label" for="FiltroDataInicial">Início</label>
+                <input class="form-control" type="date" id="FiltroDataInicial" />
+            </div>
+
+            <div>
+                <label class="form-label" for="FiltroDataFinal">Fim</label>
+                <input class="form-control" type="date" id="FiltroDataFinal" />
+            </div>
+
+            <div>
+                <label class="form-label" for="FiltroUsuariosToggle">Usuários</label>
+                <div class="dashboard-user-picker listagem-multi-picker" data-empty-text="Todos os usuários" data-all-text="Todos os usuários" data-many-text="usuários">
+                    <button class="dashboard-user-picker-toggle" type="button" id="FiltroUsuariosToggle" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="dashboard-user-picker-text">Todos os usuários</span>
+                        <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="dashboard-user-picker-menu" role="listbox" aria-labelledby="FiltroUsuariosToggle">
+                        <div class="dashboard-user-picker-actions">
+                            <button type="button" class="dashboard-user-picker-action" data-user-picker-action="all">Todos</button>
+                            <button type="button" class="dashboard-user-picker-action" data-user-picker-action="clear">Limpar</button>
+                        </div>
+                        <div class="dashboard-user-picker-options">
+                            @foreach (var usuario in usuariosDisponiveis)
+                            {
+                                <label class="dashboard-user-option">
+                                    <input class="form-check-input listagem-multi-checkbox" type="checkbox"
+                                           data-filter-name="usuarios" value="@usuario.Value" data-label="@usuario.Text" />
+                                    <span>@usuario.Text</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label" for="FiltroTagsToggle">Tags</label>
+                <div class="dashboard-user-picker listagem-multi-picker" data-empty-text="Todas as tags" data-all-text="Todas as tags" data-many-text="tags">
+                    <button class="dashboard-user-picker-toggle" type="button" id="FiltroTagsToggle" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="dashboard-user-picker-text">Todas as tags</span>
+                        <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="dashboard-user-picker-menu" role="listbox" aria-labelledby="FiltroTagsToggle">
+                        <div class="dashboard-user-picker-actions">
+                            <button type="button" class="dashboard-user-picker-action" data-user-picker-action="clear">Todas</button>
+                            <button type="button" class="dashboard-user-picker-action" data-user-picker-action="all">Marcar</button>
+                        </div>
+                        <div class="dashboard-user-picker-options">
+                            @foreach (var tag in tagsDisponiveis)
+                            {
+                                <label class="dashboard-user-option">
+                                    <input class="form-check-input listagem-multi-checkbox" type="checkbox"
+                                           data-filter-name="tags" value="@tag.Value" data-label="@tag.Text" />
+                                    <span>@tag.Text</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label" aria-hidden="true">&nbsp;</label>
+                <button class="btn btn-filter" type="submit">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                    <span>Atualizar</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card dashboard-card listagem-card">
+        <div class="card-body dashboard-table-wrap listagem-table-wrap">
+            <table id="tb-despesas-listagem" class="table table-borderless align-middle dashboard-table listagem-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descritivo</th>
+                        <th style="width:140px">Parcelas / frequência</th>
+                        <th style="width:140px">Valor</th>
+                        <th style="width:130px">Vencimento</th>
+                        <th style="width:118px">Ações</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs5/dataTables.bootstrap5.min.css" />
+    <script src="~/lib/datatables.net/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs5/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(function () {
+            let tabela;
+            let timeoutAtualizacao;
+            const recarregarTabela = function () {
+                if (!tabela) return;
+
+                window.clearTimeout(timeoutAtualizacao);
+                timeoutAtualizacao = window.setTimeout(function () {
+                    tabela.ajax.reload();
+                }, 300);
+            };
+
+            iniciarSeletoresListagem(recarregarTabela);
+
+            tabela = $("#tb-despesas-listagem").DataTable({
+                processing: true,
+                serverSide: true,
+                dom: "<'row'<'col-sm-12 col-md-6'l>>rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                ajax: {
+                    url: "@Url.Action("ListarDataTable", "Despesas")",
+                    type: "GET",
+                    traditional: true,
+                    data: function (dados) {
+                        dados.search.value = $("#FiltroTexto").val();
+                        dados.dataInicial = $("#FiltroDataInicial").val();
+                        dados.dataFinal = $("#FiltroDataFinal").val();
+
+                        $(".listagem-multi-checkbox:checked").each(function () {
+                            const nome = $(this).data("filterName");
+                            if (!dados[nome]) dados[nome] = [];
+                            dados[nome].push($(this).val());
+                        });
+                    }
+                },
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                order: [[4, "desc"]],
+                language: obterIdiomaDataTables(),
+                columns: [
+                    { data: "titulo", render: $.fn.dataTable.render.text() },
+                    {
+                        data: "descritivo",
+                        render: function (data, type) {
+                            if (type !== "display") return data;
+                            return $("<div>").text(data || "-").html();
+                        }
+                    },
+                    { data: "qtdParcelas", className: "text-nowrap" },
+                    { data: "valor", className: "valor-despesa text-nowrap" },
+                    { data: "vencimento", className: "data-despesa text-nowrap" },
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        className: "text-end text-nowrap",
+                        render: function (data, type, row) {
+                            if (type !== "display") return row.id;
+
+                            return `
+                                <a class="btn btn-sm btn-icon btn-deletar" href="/Despesas/Delete/${row.id}" title="Remover despesa">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </a>
+                                <a class="btn btn-sm btn-icon btn-editar" href="/Despesas/Edicao/${row.id}" title="Editar despesa">
+                                    <i class="fa fa-edit" aria-hidden="true"></i>
+                                </a>
+                                <a class="btn btn-sm btn-icon btn-editar" href="/Despesas/Details/${row.id}" title="Detalhar despesa">
+                                    <i class="fa fa-newspaper-o" aria-hidden="true"></i>
+                                </a>`;
+                        }
+                    }
+                ],
+                createdRow: function (row, data) {
+                    if (!data.tags || data.tags.length === 0) return;
+
+                    const tags = data.tags
+                        .map(tag => `<span class="badge badge-tag me-1">${$("<div>").text(tag).html()}</span>`)
+                        .join("");
+
+                    $("td:eq(1)", row).append(`<div class="listagem-tags">${tags}</div>`);
+                }
+            });
+
+            $("#filtros-despesas-listagem").on("submit", function (ev) {
+                ev.preventDefault();
+                tabela.ajax.reload();
+            });
+
+            $("#FiltroTexto").on("input", recarregarTabela);
+            $("#FiltroDataInicial, #FiltroDataFinal").on("change", function () {
+                tabela.ajax.reload();
+            });
+
+            $("#FiltroTexto").on("keydown", function (ev) {
+                if (ev.key === "Enter") {
+                    ev.preventDefault();
+                    tabela.ajax.reload();
+                }
+            });
+        });
+
+        function iniciarSeletoresListagem(aoAlterarFiltro) {
+            const pickers = $(".listagem-multi-picker");
+
+            pickers.each(function () {
+                const picker = $(this);
+                const toggle = picker.find(".dashboard-user-picker-toggle");
+                const texto = picker.find(".dashboard-user-picker-text");
+                const checkboxes = picker.find(".listagem-multi-checkbox");
+
+                const atualizarTexto = function () {
+                    const selecionados = checkboxes.filter(":checked");
+
+                    if (selecionados.length === 0) {
+                        texto.text(picker.data("emptyText"));
+                    } else if (selecionados.length === checkboxes.length) {
+                        texto.text(picker.data("allText"));
+                    } else if (selecionados.length === 1) {
+                        texto.text(selecionados.first().data("label"));
+                    } else {
+                        texto.text(`${selecionados.length} ${picker.data("manyText")}`);
+                    }
+                };
+
+                toggle.on("click", function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    pickers.not(picker).removeClass("is-open")
+                        .find(".dashboard-user-picker-toggle")
+                        .attr("aria-expanded", "false");
+
+                    const aberto = picker.toggleClass("is-open").hasClass("is-open");
+                    toggle.attr("aria-expanded", aberto.toString());
+                });
+
+                picker.find(".dashboard-user-picker-menu").on("click", function (ev) {
+                    ev.stopPropagation();
+                });
+
+                picker.find("[data-user-picker-action]").on("click", function () {
+                    const selecionarTodos = $(this).data("userPickerAction") === "all";
+                    checkboxes.prop("checked", selecionarTodos);
+                    atualizarTexto();
+                    aoAlterarFiltro();
+                });
+
+                checkboxes.on("change", function () {
+                    atualizarTexto();
+                    aoAlterarFiltro();
+                });
+                atualizarTexto();
+            });
+
+            $(document).on("click.listagemPicker", function () {
+                pickers.removeClass("is-open");
+                pickers.find(".dashboard-user-picker-toggle").attr("aria-expanded", "false");
+            });
+        }
+
+        function obterIdiomaDataTables() {
+            return {
+                emptyTable: "Nenhum registro encontrado",
+                info: "Mostrando _START_ até _END_ de _TOTAL_ registros",
+                infoEmpty: "Mostrando 0 até 0 de 0 registros",
+                infoFiltered: "(filtrado de _MAX_ registros no total)",
+                lengthMenu: "Exibir _MENU_ registros",
+                loadingRecords: "Carregando...",
+                processing: "Carregando...",
+                search: "Buscar",
+                zeroRecords: "Nenhum registro encontrado",
+                paginate: {
+                    first: "Primeiro",
+                    last: "Último",
+                    next: "Próximo",
+                    previous: "Anterior"
+                }
+            };
+        }
+    </script>
+}

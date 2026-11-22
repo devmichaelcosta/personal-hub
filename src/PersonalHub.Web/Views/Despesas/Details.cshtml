@@ -1,0 +1,76 @@
+﻿@model DespesaViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Detalhes da despesa</h1>
+<hr />
+<div>
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+        @if (Model.Recorrente)
+        {
+            <dt class="col-sm-2">Periodicidade</dt>
+            <dd class="col-sm-10">Mensal, sem parcelas</dd>
+        }
+        @if (!string.IsNullOrEmpty(Model.Descritivo))
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Descritivo)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Descritivo)
+            </dd>
+        }
+        <dt class = "col-sm-2">
+            @(Model.Recorrente ? "Valor mensal" : Html.DisplayNameFor(model => model.Valor))
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Valor)
+        </dd>
+        <dt class = "col-sm-2">Tags</dt>
+        <dd class = "col-sm-10">
+            @foreach (var tag in Model.TagsDespesas)
+            {
+                <label class="badge bg-primary">@tag</label>
+            }
+        </dd>
+    </dl>
+
+    @if (!Model.Recorrente && Model.QtdParcelas > 0)
+    {
+        <div class="mt-2">
+            <table class="table table-striped table-borderless">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Valor</th>
+                        <th>Vencimento</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var parcela in Model.Parcelas)
+                    {
+                        <tr>
+                            <td>Parcela @parcela.Numero</td>
+                            <td>@parcela.Valor</td>
+                            <td>@parcela.Vencimento</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a> |
+    <a asp-action="Index">Voltar para lista</a>
+</div>

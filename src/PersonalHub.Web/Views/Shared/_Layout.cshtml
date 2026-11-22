@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br" data-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Personal Hub</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32x32.png" asp-append-version="true" />
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" asp-append-version="true" />
+    <link rel="shortcut icon" href="~/favicon.ico" asp-append-version="true" />
+    <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png" asp-append-version="true" />
+    <script>
+        (function () {
+            var tema = localStorage.getItem("personalhub.theme") || "dark";
+            document.documentElement.setAttribute("data-theme", tema === "dark" ? "dark" : "light");
+        })();
+    </script>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">*@
+    <link rel="stylesheet" href="~/lib/limonte-sweetalert2/sweetalert2.min.css" />
+    <link rel="stylesheet" href="~/css/font-awesome.css" />
+    <link rel="stylesheet" href="~/lib/sidebar/jquery.sidebar.css" />
+    <link rel="stylesheet" asp-append-version="true" href="~/css/site.css" />
+</head>
+<body id="@(ViewData["DesignSystemPilot"] is true ? "design-system-pilot" : string.Empty)"
+      class="app-design-system @(ViewData["DesignSystemPilot"] is true ? "design-system-pilot" : string.Empty)">
+    @{
+        string controllerAtual = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+        string actionAtual = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+        bool dashboardAtivo = controllerAtual == "Home" && actionAtual == "Dashboard";
+        bool relatoriosAtivo = controllerAtual == "Home" && actionAtual == "Relatorios";
+    }
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm app-navbar border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Dashboard">
+                    <span class="brand-mark"><i class="fa fa-usd" aria-hidden="true"></i></span>
+                    <span>Personal Hub</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(dashboardAtivo ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Dashboard">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(controllerAtual == "Despesas" ? "active" : "")" asp-area="" asp-controller="Despesas" asp-action="Index">Despesas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(controllerAtual == "Rendimentos" ? "active" : "")" asp-area="" asp-controller="Rendimentos" asp-action="Index">Rendimentos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(relatoriosAtivo ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Relatorios">Relatórios</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end align-items-center gap-3">
+                    <button class="theme-toggle" type="button" id="theme-toggle"
+                            aria-label="Alternar para light mode" aria-pressed="true">
+                        <i class="fa fa-sun-o theme-toggle-icon theme-toggle-icon-light" aria-hidden="true"></i>
+                        <span class="theme-toggle-track" aria-hidden="true">
+                            <span class="theme-toggle-thumb"></span>
+                        </span>
+                        <i class="fa fa-moon-o theme-toggle-icon theme-toggle-icon-dark" aria-hidden="true"></i>
+                    </button>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    { 
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <button class="btn navbar-user dropdown-toggle" type="button" id="navbar-user-menu"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-user-o" aria-hidden="true"></i>
+                                    @User.Identity.Name
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbar-user-menu">
+                                    <li><span class="dropdown-item disabled">Minha conta</span></li>
+                                    <li><span class="dropdown-item disabled">Configurações</span></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Conta" asp-action="Logout">Sair</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    @await Html.PartialAsync("_ChatWidget")
+     
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/limonte-sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/lib/sidebar/jquery.sidebar.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

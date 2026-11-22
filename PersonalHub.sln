@@ -1,0 +1,55 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalHub.Web", "src\PersonalHub.Web\PersonalHub.Web.csproj", "{D2B0D6B0-6A19-4B7D-AA2A-5874457731E4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalHub.Tests", "tests\PersonalHub.Tests\PersonalHub.Tests.csproj", "{9D792439-2647-4207-82E5-899D3EAAADCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalHub.Api", "src\PersonalHub.Api\PersonalHub.Api.csproj", "{E7C3650D-E01D-492A-A08A-566F009EBC66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalHub.Domain", "src\PersonalHub.Domain\PersonalHub.Domain.csproj", "{5587180A-98CB-4B57-AB31-B5E1F31EB7F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalHub.Infrastructure", "src\PersonalHub.Infrastructure\PersonalHub.Infrastructure.csproj", "{0203A1F6-631D-4814-A5D2-0D304A67B947}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalHub.Application", "src\PersonalHub.Application\PersonalHub.Application.csproj", "{63AF8257-F811-42BB-9496-91CB30E6C199}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2B0D6B0-6A19-4B7D-AA2A-5874457731E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B0D6B0-6A19-4B7D-AA2A-5874457731E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B0D6B0-6A19-4B7D-AA2A-5874457731E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B0D6B0-6A19-4B7D-AA2A-5874457731E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D792439-2647-4207-82E5-899D3EAAADCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D792439-2647-4207-82E5-899D3EAAADCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D792439-2647-4207-82E5-899D3EAAADCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D792439-2647-4207-82E5-899D3EAAADCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7C3650D-E01D-492A-A08A-566F009EBC66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7C3650D-E01D-492A-A08A-566F009EBC66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7C3650D-E01D-492A-A08A-566F009EBC66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7C3650D-E01D-492A-A08A-566F009EBC66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5587180A-98CB-4B57-AB31-B5E1F31EB7F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5587180A-98CB-4B57-AB31-B5E1F31EB7F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5587180A-98CB-4B57-AB31-B5E1F31EB7F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5587180A-98CB-4B57-AB31-B5E1F31EB7F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0203A1F6-631D-4814-A5D2-0D304A67B947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0203A1F6-631D-4814-A5D2-0D304A67B947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0203A1F6-631D-4814-A5D2-0D304A67B947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0203A1F6-631D-4814-A5D2-0D304A67B947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63AF8257-F811-42BB-9496-91CB30E6C199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63AF8257-F811-42BB-9496-91CB30E6C199}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63AF8257-F811-42BB-9496-91CB30E6C199}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63AF8257-F811-42BB-9496-91CB30E6C199}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BA328C91-7760-444E-9A48-579040EBAEBA}
+	EndGlobalSection
+EndGlobal

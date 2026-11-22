@@ -1,0 +1,28 @@
+@model PersonalHub.Web.Models.ViewModels.EdicaoDespesaViewModel
+
+<div class="cabecalho">
+    Editar despesa
+</div>
+<div class="corpo">
+    <div class="col-md-12">
+        <form asp-action="EdicaoModal" id="form-dados-despesa">
+            @if (ViewBag.TemErros)
+            {
+                <div class="alert alert-danger">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </div>
+            }
+            
+            <partial name="EdicaoCampos" model="Model" />
+        </form>
+    </div>
+</div>  
+
+<div class="rodape">
+    <button type="button" value="Atualizar" class="btn btn-dark me-2" id="btn-atualizar-despesa">
+        <i class="fa fa-save"></i> Atualizar
+    </button>
+    <a class="btn btn-warning " asp-action="Index">
+        <i class="fa fa-close"></i> Fechar
+    </a>
+</div>

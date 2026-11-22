@@ -1,0 +1,133 @@
+@model PersonalHub.Web.Models.ViewModels.RelatorioMensalViewModel
+
+@{
+    ViewData["Title"] = "Relatórios";
+    var culturaCss = System.Globalization.CultureInfo.InvariantCulture;
+    decimal maiorDespesa = Model.Meses.Count > 0 ? Model.Meses.Max(e => e.Despesas) : 0;
+    decimal maiorRendimento = Model.Meses.Count > 0 ? Model.Meses.Max(e => e.Rendimentos) : 0;
+    decimal maiorTag = Model.Tags.Count > 0 ? Model.Tags.Max(e => e.Total) : 0;
+}
+
+<section class="dashboard-shell relatorios-shell">
+    <div class="dashboard-title">
+        <div>
+            <span class="section-kicker">Análise</span>
+            <h1>Relatórios mensais</h1>
+            <p>Comparação entre meses e leitura de variação financeira</p>
+        </div>
+        <form class="dashboard-title-actions relatorio-periodo" method="get" asp-action="Relatorios" asp-controller="Home">
+            <input class="form-control" type="month" name="dataReferencia" value="@Model.DataReferencia.ToString("yyyy-MM")" />
+            <button class="btn btn-accent dashboard-title-action" type="submit">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+                <span>Atualizar</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="row g-3 dashboard-indicadores">
+        <div class="col-md-4">
+            <div class="card dashboard-indicador indicador-despesas">
+                <div class="card-body">
+                    <span class="indicator-icon"><i class="fa fa-long-arrow-down" aria-hidden="true"></i></span>
+                    <div>
+                        <span class="indicator-label">Variação despesas</span>
+                        <h5 class="card-title">@Model.VariacaoDespesas.ToString("C")</h5>
+                        <p>contra mês anterior</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-indicador indicador-rendimentos">
+                <div class="card-body">
+                    <span class="indicator-icon"><i class="fa fa-long-arrow-up" aria-hidden="true"></i></span>
+                    <div>
+                        <span class="indicator-label">Variação rendimentos</span>
+                        <h5 class="card-title">@Model.VariacaoRendimentos.ToString("C")</h5>
+                        <p>contra mês anterior</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-indicador indicador-saldo">
+                <div class="card-body">
+                    <span class="indicator-icon"><i class="fa fa-credit-card" aria-hidden="true"></i></span>
+                    <div>
+                        <span class="indicator-label">Variação saldo</span>
+                        <h5 class="card-title">@Model.VariacaoSaldo.ToString("C")</h5>
+                        <p>contra mês anterior</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="relatorio-grid">
+        <div class="card dashboard-card relatorio-card">
+            <div class="dashboard-card-header">
+                <div>
+                    <span class="section-kicker">Mês a mês</span>
+                    <h2>Evolução financeira</h2>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="relatorio-meses">
+                    @foreach (var mes in Model.Meses)
+                    {
+                        decimal larguraDespesa = maiorDespesa > 0 ? (mes.Despesas / maiorDespesa) * 100 : 0;
+                        decimal larguraRendimento = maiorRendimento > 0 ? (mes.Rendimentos / maiorRendimento) * 100 : 0;
+
+                        <div class="relatorio-mes">
+                            <div class="relatorio-mes-topo">
+                                <strong>@mes.Mes.ToString("MMM yyyy")</strong>
+                                <span>@mes.Saldo.ToString("C")</span>
+                            </div>
+                            <div class="relatorio-barra-linha">
+                                <span>Despesas</span>
+                                <div class="relatorio-barra"><i class="barra-despesa" style="width:@larguraDespesa.ToString("0.##", culturaCss)%"></i></div>
+                                <strong>@mes.Despesas.ToString("C")</strong>
+                            </div>
+                            <div class="relatorio-barra-linha">
+                                <span>Rendimentos</span>
+                                <div class="relatorio-barra"><i class="barra-rendimento" style="width:@larguraRendimento.ToString("0.##", culturaCss)%"></i></div>
+                                <strong>@mes.Rendimentos.ToString("C")</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card relatorio-card">
+            <div class="dashboard-card-header">
+                <div>
+                    <span class="section-kicker">Tags</span>
+                    <h2>Maiores despesas do mês</h2>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.Tags.Count == 0)
+                {
+                    <div class="alert alert-info">Nenhuma tag encontrada neste período.</div>
+                }
+                else
+                {
+                    <div class="relatorio-tags">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            decimal larguraTag = maiorTag > 0 ? (tag.Total / maiorTag) * 100 : 0;
+                            <div class="relatorio-tag">
+                                <div>
+                                    <span class="badge badge-tag">@tag.Tag</span>
+                                    <strong>@tag.Total.ToString("C")</strong>
+                                </div>
+                                <div class="relatorio-barra"><i class="barra-despesa" style="width:@larguraTag.ToString("0.##", culturaCss)%"></i></div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

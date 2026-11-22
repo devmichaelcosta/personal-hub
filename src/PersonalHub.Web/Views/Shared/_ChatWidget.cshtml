@@ -1,0 +1,60 @@
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div id="chat-widget"
+         data-load-url="@Url.Action("Carregar", "Chat")"
+         data-send-url="@Url.Action("Enviar", "Chat")"
+         data-confirm-url="@Url.Action("Confirmar", "Chat")"
+         data-confirm-batch-url="@Url.Action("ConfirmarLote", "Chat")"
+         data-confirm-edit-url="@Url.Action("ConfirmarEdicao", "Chat")"
+         data-clear-url="@Url.Action("Limpar", "Chat")">
+        @Html.AntiForgeryToken()
+
+        <button id="chat-launcher" class="chat-launcher" type="button" aria-label="Abrir assistente de despesas" hidden>
+            <i class="fa fa-comments" aria-hidden="true"></i>
+            <span>Assistente</span>
+        </button>
+
+        <section id="chat-panel" class="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title">
+            <header class="chat-header">
+                <div class="chat-brand">
+                    <span class="chat-brand-icon"><i class="fa fa-comments-o" aria-hidden="true"></i></span>
+                    <div>
+                        <h2 id="chat-title">Assistente de despesas</h2>
+                        <span class="chat-local-status"><span class="chat-status-dot"></span> IA local</span>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <button id="chat-clear" type="button" aria-label="Limpar histórico" title="Limpar histórico">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </button>
+                    <button id="chat-minimize" type="button" aria-label="Minimizar chat" title="Minimizar">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div id="chat-status" class="chat-status" role="status" aria-live="polite">Seu histórico ficará disponível entre páginas e sessões.</div>
+            <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
+
+            <form id="chat-form" class="chat-composer" enctype="multipart/form-data">
+                <div class="chat-attachment-row">
+                    <label class="chat-attachment-button" for="chat-image">
+                        <i class="fa fa-paperclip" aria-hidden="true"></i>
+                        <span>Anexar imagem</span>
+                    </label>
+                    <input id="chat-image" name="imagem" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+                    <span id="chat-file-name" class="chat-file-name" aria-live="polite"></span>
+                </div>
+                <div class="chat-input-row">
+                    <textarea id="chat-input" name="mensagem" rows="2" maxlength="4000"
+                              placeholder="Pergunte sobre seus gastos ou descreva uma despesa…"
+                              aria-label="Mensagem para o assistente"></textarea>
+                    <button id="chat-send" class="chat-send" type="submit" aria-label="Enviar mensagem" title="Enviar">
+                        <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p class="chat-composer-hint">Ollama local · imagens são descartadas após a extração · confirme antes de gravar</p>
+            </form>
+        </section>
+    </div>
+}

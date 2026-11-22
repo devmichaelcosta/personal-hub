@@ -1,0 +1,62 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<section class="login-shell">
+    <div class="login-card">
+        <div class="login-brand">
+            <span class="login-brand-mark"><i class="fa fa-usd" aria-hidden="true"></i></span>
+            <span>Personal Hub</span>
+        </div>
+
+        <div class="login-header">
+            <span class="section-kicker">Acesso seguro</span>
+            <h1>Entrar na sua conta</h1>
+            <p>Acompanhe despesas, rendimentos e saldo em uma visão clara do seu mês.</p>
+        </div>
+
+        <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="login-form">
+            <div asp-validation-summary="ModelOnly" class="login-validation" role="alert"></div>
+
+            <div class="login-field">
+                <label asp-for="UserName" class="form-label"></label>
+                <div class="login-input">
+                    <i class="fa fa-user-o" aria-hidden="true"></i>
+                    <input asp-for="UserName" class="form-control" autocomplete="username" placeholder="Seu usuário" />
+                </div>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="login-field">
+                <label asp-for="Password" class="form-label"></label>
+                <div class="login-input">
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Sua senha" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="login-options">
+                <label class="login-remember">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <span>@Html.DisplayNameFor(model => model.RememberMe)</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-accent login-submit">
+                <i class="fa fa-sign-in" aria-hidden="true"></i>
+                <span>Entrar</span>
+            </button>
+        </form>
+    </div>
+</section>
+
+@section Scripts
+{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        document.querySelector('#UserName')?.focus();
+    </script>
+}

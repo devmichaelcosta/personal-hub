@@ -1,0 +1,71 @@
+﻿@model CadastroDespesaViewModel
+            
+<div class="form-group mb-2">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="float-start" style="padding-top: 6px;margin-right: 50px;"> 
+                <input type="radio" name="Tipo" id="Parcelado" 
+                    value="0" @(Model.Tipo == TipoCadastroDespesa.Parcelado ? "checked='checked'" : "") /> 
+                <label for="Parcelado" class="control-label">Parcelado</label>
+                
+                <input type="radio" name="Tipo" id="GerarVarias" value="1" 
+                    @(Model.Tipo == TipoCadastroDespesa.GerarParaOsProximosMeses ? "checked='checked'" : "") /> 
+                <label for="GerarVarias" class="control-label">Gerar várias.</label>
+                <input type="radio" name="Tipo" id="RecorrenteMensal" value="2"
+                    @(Model.Tipo == TipoCadastroDespesa.RecorrenteMensal ? "checked='checked'" : "") />
+                <label for="RecorrenteMensal" class="control-label">Recorrente mensal</label>
+            </div>
+            <div class="float-start @Model.ObterCssTipoCadastro()" id="campos-tipo-gerar-varias">
+                Gerar para  
+                <input asp-for="QtdMeses" class="form-control" type="number" 
+                    style="display:inline-block; width: 100px;" /> meses
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="Titulo" class="control-label">Título</label>
+    <input asp-for="Titulo" class="form-control" />
+    <span asp-validation-for="Titulo" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Descritivo" class="control-label"></label>
+    <textarea asp-for="Descritivo" class="form-control"></textarea> 
+</div>
+<div class="form-group row">
+    <div class="col-md-6">
+        <label asp-for="ValorParcela" id="label-valor-despesa" class="control-label">Valor parcela</label>
+        <input asp-for="ValorParcela" class="form-control campos-calculadores-total"
+               type="text" inputmode="decimal" autocomplete="off"
+               pattern="[0-9]+([,][0-9]+)?" placeholder="0,00" />
+        <span asp-validation-for="ValorParcela" class="text-danger"></span>
+    </div>
+    <div class="col-md-6" id="campo-qtd-parcelas">
+        <label asp-for="QtdParcelas" class="control-label">Nº Parcelas</label>
+        <input asp-for="QtdParcelas" class="form-control campos-calculadores-total" type="number" min="1" step="1" />
+        <span asp-validation-for="QtdParcelas" class="text-danger"></span>
+    </div>
+    <div class="col-md-6" id="campo-total-despesa">
+        <label class="control-label">Valor total</label>
+        <input id="Total" name="Total" class="form-control campo-calculado" type="number" value="0" disabled aria-label="Valor total calculado" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Vencimento" class="control-label"></label>
+        <input asp-for="Vencimento" class="form-control" type="date" />
+        <span asp-validation-for="Vencimento" class="text-danger"></span>
+    </div>
+</div> 
+<div class="form-group">
+    <label asp-for="UsuariosEnvolvidos" class="control-label">Usuários Envolvidos</label>
+    <select asp-for="UsuariosEnvolvidos"  multiple class="form-control" asp-items="ViewBag.UsuariosDisponiveis">
+    </select>
+    <span asp-validation-for="UsuariosEnvolvidos" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Tags" class="control-label"></label>
+    <select class="form-select" id="Tags" name="Tags[]" data-allow-new="true" data-allow-clear="true"
+        multiple data-server="@Url.Action("ObterTodas","Tag")" data-live-server="1">
+        <option selected disabled hidden value="">Choose a tag...</option>
+    </select>
+</div>

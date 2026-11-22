@@ -1,0 +1,46 @@
+﻿@model DespesaViewModel
+
+@{
+    ViewData["Title"] = "Remover despesa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Remover despesa</h1>
+
+<h3>Deseja remover esta despesa?</h3>
+@if (Model.Recorrente)
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>Atenção:</strong> esta despesa é recorrente. A remoção excluirá todas as ocorrências mensais, inclusive as pagas, e impedirá novos lançamentos. Esta ação não pode ser desfeita.
+    </div>
+}
+<div>
+    <h4>Despesa</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Descritivo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Descritivo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Valor)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Valor)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Remover" class="btn btn-danger" /> |
+        <a asp-action="Index">Cancelar</a>
+    </form>
+</div>

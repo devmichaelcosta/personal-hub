@@ -1,0 +1,249 @@
+@model PersonalHub.Web.Models.ViewModels.DashboardViewModel
+
+<div class="row g-3 dashboard-indicadores">
+    <div class="col-md-4 dashboard-indicador-slot dashboard-indicador-slot-principal">
+        <div class="card dashboard-indicador indicador-despesas">
+            <div class="card-body">
+                <span class="indicator-icon"><i class="fa fa-long-arrow-down" aria-hidden="true"></i></span>
+                <div>
+                    <span class="indicator-label">Despesas</span>
+                    <h5 class="card-title">@Model.Total</h5>
+                    <p>@Model.Despesas.Count lançamentos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 dashboard-indicador-slot dashboard-indicador-slot-secundario">
+        <div class="card dashboard-indicador indicador-rendimentos dashboard-widget-clickable"
+             role="button" tabindex="0" aria-label="Ver rendimentos do período">
+            <div class="card-body">
+                <span class="indicator-icon"><i class="fa fa-long-arrow-up" aria-hidden="true"></i></span>
+                <div>
+                    <span class="indicator-label">Rendimentos</span>
+                    <h5 class="card-title">@Model.Rendimentos</h5>
+                    <p>neste período</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 dashboard-indicador-slot dashboard-indicador-slot-secundario">
+        <div class="card dashboard-indicador indicador-saldo">
+            <div class="card-body">
+                <span class="indicator-icon"><i class="fa fa-credit-card" aria-hidden="true"></i></span>
+                <div>
+                    <span class="indicator-label">Saldo</span>
+                    <h5 class="card-title @(Model.SaldoNegativo ? "saldo-negativo" : string.Empty)">@Model.Saldo</h5>
+                    <p>disponivel</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Dashboard" asp-controller="home" method="post" id="dashboard-filtros" class="dashboard-filters">
+    <div class="dashboard-filter-grid">
+        <div class="filter-search">
+            <label class="form-label" for="Pesquisa">Buscar</label>
+            <div class="input-with-icon">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <input class="form-control" type="text" id="Pesquisa" name="Pesquisa" value="@Model.Pesquisa"
+                       placeholder="Buscar despesas..." />
+            </div>
+        </div>
+
+        <div class="filter-users">
+            <label class="form-label" for="UsuariosSelecionadosToggle">Usuários</label>
+            <div class="dashboard-user-picker dashboard-multi-picker" id="UsuariosSelecionadosPicker" data-empty-text="Nenhum usuário" data-all-text="Todos os usuários" data-many-text="usuários">
+                <button class="dashboard-user-picker-toggle" type="button" id="UsuariosSelecionadosToggle"
+                        aria-haspopup="listbox" aria-expanded="false">
+                    <span class="dashboard-user-picker-text">Usuários</span>
+                    <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                </button>
+
+                <div class="dashboard-user-picker-menu" role="listbox" aria-labelledby="UsuariosSelecionadosToggle">
+                    <div class="dashboard-user-picker-actions">
+                        <button type="button" class="dashboard-user-picker-action" data-user-picker-action="all">Todos</button>
+                        <button type="button" class="dashboard-user-picker-action" data-user-picker-action="clear">Limpar</button>
+                    </div>
+
+                    <div class="dashboard-user-picker-options">
+                        @foreach (var usuario in Model.UsuariosDisponiveis)
+                        {
+                            <label class="dashboard-user-option">
+                                <input class="form-check-input dashboard-user-checkbox dashboard-multi-checkbox" type="checkbox"
+                                       data-name="UsuariosSelecionados" value="@usuario.Value" data-label="@usuario.Text" checked="@usuario.Selected" />
+                                <span>@usuario.Text</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="dashboard-user-picker-hidden dashboard-multi-hidden"></div>
+            </div>
+        </div>
+
+        <div class="filter-tags">
+            <label class="form-label" for="TagsSelecionadasToggle">Tags</label>
+            <div class="dashboard-user-picker dashboard-multi-picker" id="TagsSelecionadasPicker" data-empty-text="Todas as tags" data-all-text="Todas as tags" data-many-text="tags">
+                <button class="dashboard-user-picker-toggle" type="button" id="TagsSelecionadasToggle"
+                        aria-haspopup="listbox" aria-expanded="false">
+                    <span class="dashboard-user-picker-text">Tags</span>
+                    <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                </button>
+
+                <div class="dashboard-user-picker-menu" role="listbox" aria-labelledby="TagsSelecionadasToggle">
+                    <div class="dashboard-user-picker-actions">
+                        <button type="button" class="dashboard-user-picker-action" data-user-picker-action="clear">Todas</button>
+                        <button type="button" class="dashboard-user-picker-action" data-user-picker-action="all">Marcar</button>
+                    </div>
+
+                    <div class="dashboard-user-picker-options">
+                        @foreach (var tag in Model.TagsDisponiveis)
+                        {
+                            <label class="dashboard-user-option">
+                                <input class="form-check-input dashboard-user-checkbox dashboard-multi-checkbox" type="checkbox"
+                                       data-name="TagsSelecionadas" value="@tag.Value" data-label="@tag.Text" checked="@tag.Selected" />
+                                <span>@tag.Text</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="dashboard-user-picker-hidden dashboard-multi-hidden"></div>
+            </div>
+        </div>
+
+        <div class="filter-date">
+            <label class="form-label" asp-for="MesReferencia">Mês</label>
+            <div class="dashboard-month-picker">
+                <select class="form-select" id="MesReferenciaMes" aria-label="Mês">
+                    <option value="">Todos os meses</option>
+                    @for (int mes = 1; mes <= 12; mes++)
+                    {
+                        <option value="@mes.ToString("00")" selected="@(Model.MesReferencia?.Month == mes)">@System.Globalization.CultureInfo.GetCultureInfo("pt-BR").DateTimeFormat.GetMonthName(mes)</option>
+                    }
+                </select>
+                <select class="form-select" id="MesReferenciaAno" aria-label="Ano">
+                    @for (int ano = DateTime.Today.Year - 50; ano <= DateTime.Today.Year + 5; ano++)
+                    {
+                        <option value="@ano" selected="@((Model.MesReferencia?.Year ?? DateTime.Today.Year) == ano)">@ano</option>
+                    }
+                </select>
+                <input type="hidden" id="MesReferencia" name="MesReferencia" value="@(Model.MesReferencia?.ToString("yyyy-MM") ?? string.Empty)" />
+            </div>
+        </div>
+
+        <div class="filter-action">
+            <button class="btn btn-filter" type="submit">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+                <span>Atualizar</span>
+            </button>
+        </div>
+    </div>
+</form>
+
+<div class="row dashboard-lista">
+    <div class="col-md-12">
+        <div class="card dashboard-card mt-3">
+            @if (Model.Despesas.Count == 0)
+            {
+                <div class="card-body">
+                    <div class="alert alert-info mt-3">
+                        Nenhuma despesa cadastrada.
+                    </div>
+                </div>
+            }
+
+            @if (Model.Despesas.Count > 0)
+            {
+                <div class="card-body dashboard-table-wrap">
+                    <table id="tb-despesas" class="table table-borderless align-middle dashboard-table">
+                        <thead>
+                            <tr>
+                                <th style="width:42px"></th>
+                                <th style="width:32px"></th>
+                                <th data-sort-key="titulo">DESPESA</th>
+                                <th style="width:260px" data-sort-key="tags">CATEGORIAS / CONTA</th>
+                                <th style="width:150px" data-sort-key="valor">Valor</th>
+                                <th style="width:120px" data-sort-key="data">Data</th>
+                                <th style="width:150px" data-sort-key="usuarios">Usuário</th>
+                                <th style="width:92px">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var despesa in Model.Despesas)
+                            {
+                                <tr class="@(despesa.ClasseCssVencimento + (despesa.Pago ? " pago" : string.Empty))" title="@despesa.TituloVencimento">
+                                    <td>
+                                        <input class="form-check-input" type="checkbox" name="Pago" @(despesa.Pago ? "checked='checked'" : "")
+                                               id="@(despesa.Recorrente ? $"ocorrencia-{despesa.OcorrenciaId}" : $"despesa-{despesa.DespesaId}-{despesa.ParcelaId}")"
+                                               data-parcela-id="@despesa.ParcelaId" data-ocorrencia-id="@despesa.OcorrenciaId">
+                                    </td>
+                                    <td><span class="status-dot" aria-hidden="true"></span></td>
+                                    <td data-sort-value="@despesa.Titulo.ToLowerInvariant()">
+                                        <div class="despesa-titulo">@despesa.Titulo</div>
+                                        @if (despesa.Recorrente)
+                                        {
+                                            <span class="badge badge-tag mt-1">Mensal</span>
+                                        }
+                                    </td>
+                                    <td data-sort-value="@string.Join(" ", despesa.Tags).ToLowerInvariant()">
+                                        @foreach (var tag in despesa.Tags)
+                                        {
+                                            <span class="badge badge-tag me-1">@tag</span>
+                                        }
+                                    </td>
+                                    <td class="valor-despesa" data-sort-value="@despesa.Valor.ToString(System.Globalization.CultureInfo.InvariantCulture)">@despesa.ValorFormatado</td>
+                                    <td class="data-despesa text-nowrap" data-sort-value="@despesa.Vencimento">@despesa.Vencimento</td>
+                                    <td data-sort-value="@string.Join(" ", despesa.AvatarUsuariosEnvolvidos).ToLowerInvariant()">
+                                        @foreach (var avatar in despesa.AvatarUsuariosEnvolvidos)
+                                        {
+                                            <span class="badge badge-usuario me-1">@avatar</span>
+                                        }
+                                    </td>
+                                    <td class="text-end text-nowrap">
+                                        <button class="btn btn-sm btn-icon btn-editar"
+                                                data-action-editar="@Url.Action("EdicaoModal", "Despesas", new { id = despesa.DespesaId, parcelaId = despesa.ParcelaId, ocorrenciaId = despesa.OcorrenciaId })"
+                                                title="Editar despesa">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <a class="btn btn-sm btn-danger btn-icon btn-deletar"
+                                           data-action="@Url.Action("Deletar", "Despesas", new { id = despesa.DespesaId })"
+                                           data-recorrente="@(despesa.Recorrente ? "true" : "false")"
+                                           title="Remover despesa">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="dashboard-despesas-pagas">
+                    <span>Despesas pagas</span>
+                    <strong>@Model.TotalPago</strong>
+                </div>
+                <div class="card-footer dashboard-totalizador">
+                    <div>
+                        <span>Total</span>
+                        <strong>@Model.Total</strong>
+                        <div class="summary-sparkline" aria-hidden="true">
+                            <span></span><span></span><span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <div>
+                        <span>Despesas conjuntas</span>
+                        <strong>@Model.TotalDividaConjunta</strong>
+                        <div class="summary-sparkline" aria-hidden="true">
+                            <span></span><span></span><span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

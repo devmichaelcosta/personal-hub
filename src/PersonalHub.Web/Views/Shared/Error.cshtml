@@ -1,0 +1,18 @@
+﻿@model CustomErrorViewModel
+@{
+    ViewData["Title"] = Model == null ? "Erro" : Model.Titulo;
+}
+
+@{
+    if (Model == null)
+    {
+        <div>
+            <h2>Ocorreu um erro, não se preucupe nosso time de desenvolvedores já esta analisando, e sera corrigido em breve.</h2>
+        </div>
+    }
+    else
+    {
+        <h1>@Model.Titulo</h1>
+        <h2 class="text-danger">@Model.Mensagem</h2>
+    }
+}

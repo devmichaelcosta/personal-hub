@@ -1,0 +1,43 @@
+@model PersonalHub.Web.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    string periodo = Model.MesReferencia?.ToString("MMMM yyyy") ?? "Todos os meses";
+}
+
+<section class="dashboard-shell">
+    <div class="dashboard-title">
+        <div>
+            <h1>Despesas do mês</h1>
+            <p>@periodo</p>
+        </div>
+
+        <div class="dashboard-title-actions">
+            <button class="btn btn-accent dashboard-title-action" type="button" id="btn-cadastrar-rendimento"
+                    data-action="@Url.Action("CadastroModal", "Rendimentos")">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                <span>Criar rendimento</span>
+            </button>
+            <button class="btn btn-accent dashboard-title-action" type="button" id="btn-cadastrar-topo"
+                    data-action="@Url.Action("CadastroModal", "Despesas")">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                <span>Nova despesa</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="dashboard-details">
+        <partial name="DashboardDetails" model="Model" />
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <link rel="stylesheet" href="~/lib/datatables.net-bs5/dataTables.bootstrap5.min.css" />
+    <script src="~/lib/datatables.net/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs5/dataTables.bootstrap5.min.js"></script>
+    <script src="~/js/dashboard.js" asp-append-version="true" type="module"></script>
+}

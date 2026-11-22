@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "Lista de rendimentos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="dashboard-shell listagem-shell">
+    <div class="dashboard-title">
+        <div>
+            <span class="section-kicker">Entradas</span>
+            <h1>Lista de rendimentos</h1>
+            <p>Consulta paginada de rendimentos cadastrados</p>
+        </div>
+        <div class="dashboard-title-actions">
+            <a class="btn btn-accent dashboard-title-action" asp-action="Create">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                <span>Cadastrar</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card dashboard-card listagem-card">
+        <div class="card-body dashboard-table-wrap listagem-table-wrap">
+            <table id="tb-rendimentos-listagem" class="table table-borderless align-middle dashboard-table listagem-table">
+                <thead>
+                    <tr>
+                        <th style="width:130px">Data</th>
+                        <th style="width:140px">Valor</th>
+                        <th>Descritivo</th>
+                        <th>Título</th>
+                        <th style="width:118px">Ações</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <link rel="stylesheet" href="~/lib/datatables.net-bs5/dataTables.bootstrap5.min.css" />
+    <script src="~/lib/datatables.net/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables.net-bs5/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(function () {
+            $("#tb-rendimentos-listagem").DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "@Url.Action("ListarDataTable", "Rendimentos")",
+                    type: "GET"
+                },
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                order: [[0, "desc"]],
+                language: obterIdiomaDataTables(),
+                columns: [
+                    { data: "data", className: "data-despesa text-nowrap" },
+                    { data: "valor", className: "valor-despesa text-nowrap" },
+                    {
+                        data: "descritivo",
+                        render: function (data, type) {
+                            if (type !== "display") return data;
+                            return $("<div>").text(data || "-").html();
+                        }
+                    },
+                    { data: "titulo", render: $.fn.dataTable.render.text() },
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        className: "text-end text-nowrap",
+                        render: function (data, type, row) {
+                            if (type !== "display") return row.id;
+
+                            return `
+                                <a class="btn btn-sm btn-icon btn-editar" href="/Rendimentos/Edit/${row.id}" title="Editar rendimento">
+                                    <i class="fa fa-edit" aria-hidden="true"></i>
+                                </a>
+                                <a class="btn btn-sm btn-icon btn-editar" href="/Rendimentos/Details/${row.id}" title="Detalhar rendimento">
+                                    <i class="fa fa-newspaper-o" aria-hidden="true"></i>
+                                </a>
+                                <a class="btn btn-sm btn-icon btn-deletar" href="/Rendimentos/Delete/${row.id}" title="Remover rendimento">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </a>`;
+                        }
+                    }
+                ]
+            });
+        });
+
+        function obterIdiomaDataTables() {
+            return {
+                emptyTable: "Nenhum registro encontrado",
+                info: "Mostrando _START_ até _END_ de _TOTAL_ registros",
+                infoEmpty: "Mostrando 0 até 0 de 0 registros",
+                infoFiltered: "(filtrado de _MAX_ registros no total)",
+                lengthMenu: "Exibir _MENU_ registros",
+                loadingRecords: "Carregando...",
+                processing: "Carregando...",
+                search: "Buscar",
+                zeroRecords: "Nenhum registro encontrado",
+                paginate: {
+                    first: "Primeiro",
+                    last: "Último",
+                    next: "Próximo",
+                    previous: "Anterior"
+                }
+            };
+        }
+    </script>
+}

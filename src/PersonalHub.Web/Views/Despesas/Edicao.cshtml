@@ -1,0 +1,36 @@
+@model PersonalHub.Web.Models.ViewModels.EdicaoDespesaViewModel
+@{
+    ViewData["Title"] = "Editar despesa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Editar despesa</h1> 
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edicao" id="form-cadastro">
+            @if (ViewBag.TemErros)
+            {
+                <div class="alert alert-danger">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </div>
+            }
+
+            <partial name="EdicaoCampos" model="Model" />
+
+            <div class="form-group">
+                <a class="btn btn-warning" asp-action="Index"><i class="fa fa-chevron-left"></i></a>
+
+                <button type="submit" value="Atualizar"  class="btn btn-dark">
+                    <i class="fa fa-save"></i> Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div> 
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="module" src="~/js/despesa/edicao.js"></script>
+}

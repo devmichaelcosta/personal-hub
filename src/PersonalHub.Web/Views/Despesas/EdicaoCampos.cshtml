@@ -1,0 +1,71 @@
+@model PersonalHub.Web.Models.ViewModels.EdicaoDespesaViewModel
+ 
+<input type="hidden" asp-for="Id" />
+
+<input type="hidden" asp-for="ParcelaId" />
+<input type="hidden" asp-for="OcorrenciaId" />
+<input type="hidden" asp-for="Recorrente" />
+
+<div class="form-group">
+    <label asp-for="Titulo" class="control-label">Título</label>
+    <input asp-for="Titulo" class="form-control" />
+    <span asp-validation-for="Titulo" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Descritivo" class="control-label"></label>
+    <textarea asp-for="Descritivo" class="form-control"></textarea> 
+</div>
+<div class="form-group row">
+    <div class="col-md-6">
+        <label asp-for="ValorParcela" class="control-label">@(Model.Recorrente ? "Valor mensal" : "Valor parcela")</label>
+        <input asp-for="ValorParcela" class="form-control campos-calculadores-total" />
+        <span asp-validation-for="ValorParcela" class="text-danger"></span>
+    </div>
+    @if (Model.Recorrente)
+    {
+        <div class="col-md-6">
+            <label class="control-label">Periodicidade</label>
+            <input class="form-control campo-calculado" value="Mensal, sem parcelas" disabled aria-label="Periodicidade mensal" />
+        </div>
+    }
+    else
+    {
+        <div class="col-md-6">
+            <label asp-for="QtdParcelas" class="control-label">Nº Parcelas</label>
+            <input asp-for="QtdParcelas" class="form-control campos-calculadores-total" type="number" min="1" step="1" />
+            <span asp-validation-for="QtdParcelas" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label class="control-label">Valor total</label>
+            <input id="Total" name="Total" class="form-control campo-calculado" type="number" value="0" disabled aria-label="Valor total calculado" />
+        </div>
+    }
+    <div class="col-md-6">
+        <label asp-for="Vencimento" class="control-label">@(Model.Recorrente ? "Vencimento inicial" : "Vencimento")</label>
+        <input asp-for="Vencimento" class="form-control" type="date" />
+        <span asp-validation-for="Vencimento" class="text-danger"></span>
+    </div>
+</div> 
+<div class="form-group">
+    <label asp-for="UsuariosEnvolvidos" class="control-label">Usuários Envolvidos</label>
+    <select asp-for="UsuariosEnvolvidos"  multiple class="form-control" asp-items="ViewBag.UsuariosDisponiveis">                    
+    </select>
+    <span asp-validation-for="UsuariosEnvolvidos" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Tags" class="control-label"></label>
+    <select class="form-select" id="Tags" name="Tags[]" data-allow-new="true" data-allow-clear="true"
+        multiple data-server="@Url.Action("ObterTodas","Tag")" data-live-server="1">                    
+        @if (Model.TagsDespesa.Count() > 0)
+        {
+            foreach(var item in Model.TagsDespesa)
+            {
+                <option value="@item.Nome" selected="selected">@item.Nome</option>
+            }
+        }
+        else
+        {
+            <option selected disabled hidden value="">Choose a tag...</option>
+        }
+    </select>
+</div>
